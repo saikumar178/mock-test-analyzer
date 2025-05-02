@@ -1,0 +1,80 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum DifficultyLevel {
+  EASY
+  MEDIUM
+  HARD
+}
+
+model User {
+  id               Int                  @id @default(autoincrement())
+  name             String
+  email            String               @unique
+  password_hash    String?              // Null if Google signup
+  testRecords      TestRecord[]
+  performance      PerformanceAnalysis?
+  resetToken       String?              // Store reset token here
+  resetCodeExpires DateTime?            // Store expiration date of the reset token
+  isVerified       Boolean              @default(false)
+  emailToken       String?              // Used to verify email after signup
+  testAttempts     TestAttempt[]         
+}
+
+
+
+model Question {
+  id             Int              @id @default(autoincrement())
+  subject        String
+  topic          String
+  difficulty     DifficultyLevel
+  question_text  String
+  correct_option String
+  option_1       String
+  option_2       String
+  option_3       String
+  option_4       String
+  testRecords    TestRecord[]
+}
+
+model TestAttempt {
+  id         Int         @id @default(autoincrement())
+  user       User        @relation(fields: [userId], references: [id])
+  userId     Int
+  score      Int
+  started_at DateTime    @default(now())
+  completed_at DateTime?
+  records    TestRecord[]
+}
+
+model TestRecord {
+  id              Int       @id @default(autoincrement())
+  user            User      @relation(fields: [userId], references: [id])
+  userId          Int
+  question        Question  @relation(fields: [questionId], references: [id])
+  questionId      Int
+  selected_option String?
+  correct         Boolean?
+  test_date       DateTime  @default(now())
+  attempt         TestAttempt? @relation(fields: [attemptId], references: [id])
+  attemptId       Int?
+}
+
+
+model PerformanceAnalysis {
+  user            User     @relation(fields: [userId], references: [id])
+  userId          Int      @unique
+  total_tests     Int      @default(0)
+  avg_score       Float    @default(0)
+  weak_topics     String?
+  strength_topics String?
+  last_attempt    DateTime?
+}
