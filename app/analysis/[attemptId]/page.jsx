@@ -1,28 +1,47 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useParams } from 'next/navigation';
 import { Bar } from 'react-chartjs-2';
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Tooltip, Legend } from 'chart.js';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Tooltip,
+  Legend
+} from 'chart.js';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 
 export default function AnalysisPage() {
   const [data, setData] = useState(null);
+  const params = useParams();
+  const attemptId = params.attemptId;
 
   useEffect(() => {
-    fetch('/api/get-analysis')
+    fetch(`/api/get-ana/${attemptId}`)
       .then((res) => res.json())
-      .then((data) => setData(data))
+      .then((data) => {
+        console.log('Fetched analysis:', data);
+        setData(data);
+      })
       .catch((err) => console.error('Error loading analysis:', err));
-  }, []);
+  }, [attemptId]);
 
-  if (!data) return <div className="text-center mt-10">Loading analysis...</div>;
+  if (!data) {
+    return <div className="text-center mt-10">Loading analysis...</div>;
+  }
+
+  if (!Array.isArray(data.weakTopics) || !Array.isArray(data.strongTopics)) {
+    return <div className="text-center mt-10">Invalid analysis data.</div>;
+  }
 
   // Combine weak + strong topics for chart
   const chartData = [...data.weakTopics, ...data.strongTopics];
-
   const labels = chartData.map((item) => item.topic);
-  const accuracies = chartData.map((item) => (item.accuracy * 100).toFixed(1)); // %
+  const accuracies = chartData.map((item) => parseFloat(item.accuracy));
+
 
   const chartConfig = {
     labels,
@@ -30,7 +49,9 @@ export default function AnalysisPage() {
       {
         label: 'Accuracy %',
         data: accuracies,
-        backgroundColor: accuracies.map((acc) => (acc >= 80 ? '#22c55e' : '#ef4444')), // green if >=80%, red otherwise
+        backgroundColor: chartData.map((item) =>
+          parseFloat(item.accuracy) >= 80 ? '#22c55e' : '#ef4444'
+        ),        
       },
     ],
   };
@@ -68,11 +89,9 @@ export default function AnalysisPage() {
             <p>No weak topics detected yet!</p>
           ) : (
             <ul className="list-disc ml-6">
-              {data.weakTopics.map((item) => (
-                <li key={item.topic}>
-                  {item.topic} — Accuracy: {(item.accuracy * 100).toFixed(1)}%
-                </li>
-              ))}
+              {data.weakTopics.map(({ topic, accuracy }) => (
+  <p key={topic}>🚨 {topic} — Accuracy: {accuracy}%</p>
+))}
             </ul>
           )}
         </div>
@@ -83,11 +102,9 @@ export default function AnalysisPage() {
             <p>No strong topics detected yet!</p>
           ) : (
             <ul className="list-disc ml-6">
-              {data.strongTopics.map((item) => (
-                <li key={item.topic}>
-                  {item.topic} — Accuracy: {(item.accuracy * 100).toFixed(1)}%
-                </li>
-              ))}
+              {data.strongTopics.map(({ topic, accuracy }) => (
+  <p key={topic}>💪 {topic} — Accuracy: {accuracy}%</p>
+))}
             </ul>
           )}
         </div>

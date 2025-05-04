@@ -15,7 +15,6 @@ export async function POST(req) {
       return NextResponse.json({ error: 'No answers provided' }, { status: 400 });
     }
 
-    // ✅ Get the logged-in user
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
     });
@@ -24,7 +23,6 @@ export async function POST(req) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    // ✅ Fetch all questions attempted
     const questions = await prisma.question.findMany({
       where: {
         id: { in: Object.keys(answers).map(id => parseInt(id)) }
@@ -33,72 +31,63 @@ export async function POST(req) {
 
     let score = 0;
 
-    // ✅ Create a new TestAttempt
-    const newAttempt = await prisma.TestAttempt.create({
+    const newAttempt = await prisma.testAttempt.create({
       data: {
         userId: user.id,
+        score: 0,
         started_at: new Date(),
-        score:0,
       },
     });
 
-    // ✅ Save each TestRecord linked to the attempt
     for (const question of questions) {
       const selected = answers[question.id];
       const isCorrect = selected === question.correct_option;
       if (isCorrect) score += 1;
 
-      await prisma.TestRecord.create({
+      await prisma.testRecord.create({
         data: {
           userId: user.id,
           questionId: question.id,
           selected_option: selected,
           correct: isCorrect,
           test_date: new Date(),
-          attemptId: newAttempt.id,  // ✅ Link this TestRecord to the Attempt
+          attemptId: newAttempt.id,
         },
       });
     }
 
-    // ✅ Update the attempt with final score
-    await prisma.TestAttempt.update({
+    await prisma.testAttempt.update({
       where: { id: newAttempt.id },
       data: {
-        score: score,
+        score,
         completed_at: new Date(),
       },
     });
 
-    // ✅ Update or create the PerformanceAnalysis
-
-    const totalTests = await prisma.TestAttempt.count({
+    const allAttempts = await prisma.testAttempt.findMany({
       where: { userId: user.id },
     });
 
-    const totalCorrectAnswers = await prisma.TestRecord.count({
-      where: { userId: user.id, correct: true },
-    });
+    const totalTestsCount = allAttempts.length;
+    const totalScore = allAttempts.reduce((sum, a) => sum + a.score, 0);
+    const avgScore = totalTestsCount > 0 ? totalScore / totalTestsCount : 0;
 
-    const avgScore = totalCorrectAnswers / totalTests;
-
-    await prisma.PerformanceAnalysis.upsert({
+    await prisma.performanceAnalysis.upsert({
       where: { userId: user.id },
       update: {
-        total_tests: totalTests,
+        total_tests: totalTestsCount,
         avg_score: avgScore,
         last_attempt: new Date(),
       },
       create: {
         userId: user.id,
-        total_tests: totalTests,
+        total_tests: totalTestsCount,
         avg_score: avgScore,
         last_attempt: new Date(),
       },
     });
 
-    // ✅ Return success
     return NextResponse.json({ success: true, score });
-    
   } catch (error) {
     console.error('❌ Submission error:', error);
     return NextResponse.json({ error: 'Submission failed', message: error.message }, { status: 500 });

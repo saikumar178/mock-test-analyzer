@@ -11,18 +11,19 @@ export default function ExamResultPage() {
 
   useEffect(() => {
     if (status === 'authenticated') {
-      fetch('/api/get-analysis')
+      fetch('/api/get-latest-attempt')
         .then(async (res) => {
-          if (!res.ok) throw new Error('Failed to fetch analysis');
+          if (!res.ok) throw new Error('Failed to fetch latest result');
           return await res.json();
         })
         .then(setAnalysis)
         .catch((err) => {
-          console.error('Error fetching analysis:', err);
-          setError('Could not load your performance data.');
+          console.error('Error fetching latest result:', err);
+          setError('Could not load your latest result.');
         });
     }
   }, [status]);
+  
 
   if (status === 'loading') {
     return <div className="text-center mt-10 text-lg">Loading...</div>;
@@ -51,29 +52,33 @@ export default function ExamResultPage() {
           </h2>
 
           <p className="text-gray-800 dark:text-gray-200 mb-2">
-            Total Tests Taken: <strong>{analysis.total_tests}</strong>
+            Total Tests Taken: <strong>{analysis.totalTests ?? "0"}</strong>
           </p>
 
           <p className="text-gray-800 dark:text-gray-200 mb-2">
             Average Score:{' '}
             <strong>
-              {analysis.avg_score !== undefined
-                ? analysis.avg_score.toFixed(2)
-                : 'N/A'}
-            </strong>
+            {typeof analysis.avgScore === "number"
+              ? analysis.avgScore.toFixed(2)
+              : "N/A"}
+          </strong>
           </p>
 
           <p className="text-gray-800 dark:text-gray-200 mb-2">
             Weak Topics:{' '}
-            <strong>{analysis.weak_topics || 'None Identified'}</strong>
+            <strong>
+              {analysis.weakTopics?.length
+                ? analysis.weakTopics.map((t) => t.topic).join(", ")
+                : "N/A"}
+            </strong>
           </p>
 
           <p className="text-gray-800 dark:text-gray-200">
             Last Attempt:{' '}
             <strong>
-              {analysis.last_attempt
-                ? new Date(analysis.last_attempt).toLocaleString()
-                : 'Never Attempted'}
+              {analysis.lastAttempt
+                ? new Date(analysis.lastAttempt).toLocaleString()
+                : "Never Attempted"}
             </strong>
           </p>
         </div>

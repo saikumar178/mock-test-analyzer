@@ -12,18 +12,16 @@ export default function DashboardPage() {
   useEffect(() => {
     if (status === 'authenticated') {
       fetch('/api/get-analysis')
-        .then(async (res) => {
-          if (!res.ok) {
-            const errorData = await res.json().catch(() => ({}));
-            throw new Error(errorData.error || 'Failed to fetch');
-          }
-          return res.json();
-        })
+        .then(res => res.json())
         .then(setAnalysis)
-        .catch((err) => console.error('Failed to fetch analysis:', err.message));
+        .catch(err => console.error('Analysis fetch error:', err.message));
+
+      fetch('/api/get-history')
+        .then(res => res.json())
+        .then(data => setHistory(data.attempts || []))
+        .catch(err => console.error('History fetch error:', err.message));
     }
   }, [status]);
-  
 
   if (status === 'loading') {
     return <div className="text-center mt-10">Loading...</div>;
@@ -47,25 +45,21 @@ export default function DashboardPage() {
       {analysis && (
         <div className="mb-6 p-4 bg-gray-100 dark:bg-gray-800 rounded shadow">
           <h2 className="text-xl font-semibold mb-2 text-blue-700 dark:text-blue-300">Your Performance</h2>
-          <p className="text-gray-700 dark:text-gray-300">
-            Total Tests: <strong>{analysis.total_tests || 0}</strong>
-          </p>
-          <p className="text-gray-700 dark:text-gray-300">
-            Average Score:{' '}
+          <p>Total Tests: <strong>{analysis.totalTests ?? 0}</strong></p>
+          <p>Average Score: <strong>{analysis.avgScore.toFixed(2)}</strong></p>
+          <p>
+            Weak Topics:{' '}
             <strong>
-              {typeof analysis.avg_score === 'number'
-                ? analysis.avg_score.toFixed(2)
-                : '0.00'}
+              {analysis.weakTopics?.length
+                ? analysis.weakTopics.map(t => t.topic).join(', ')
+                : 'N/A'}
             </strong>
           </p>
-          <p className="text-gray-700 dark:text-gray-300">
-            Weak Topics: <strong>{analysis.weak_topics || 'N/A'}</strong>
-          </p>
-          <p className="text-gray-700 dark:text-gray-300">
+          <p>
             Last Attempt:{' '}
             <strong>
-              {analysis.last_attempt
-                ? new Date(analysis.last_attempt).toLocaleString()
+              {analysis.lastAttempt
+                ? new Date(analysis.lastAttempt).toLocaleString()
                 : 'Never'}
             </strong>
           </p>
@@ -78,24 +72,17 @@ export default function DashboardPage() {
             Recent Test History
           </h2>
           <ul className="space-y-2">
-            {history.map((record, idx) => (
+            {history.slice(0, 5).map((record, idx) => (
               <li
                 key={record.id || idx}
                 className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-700 rounded"
               >
                 <div>
-                  <p className="text-gray-800 dark:text-gray-200">
+                  <p>
                     Score: <strong>{record.score}</strong> | Date:{' '}
-                    <strong>
-                      {new Date(record.test_date).toLocaleString()}
-                    </strong>
-                  </p>
-                  <p className="text-gray-600 dark:text-gray-400 text-sm">
-                    Subject: {record.subject || 'Mixed'}
+                    <strong>{new Date(record.started_at).toLocaleString()}</strong>
                   </p>
                 </div>
-                {/* Delete button (optional) */}
-                {/* <button className="text-red-600 hover:text-red-800">🗑️</button> */}
               </li>
             ))}
           </ul>
