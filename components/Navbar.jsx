@@ -25,12 +25,7 @@ export default function Navbar() {
         <Link href="/about" className="hover:text-blue-600 dark:text-gray-300 dark:hover:text-white">About</Link>
         <Link href="/history" className="hover:text-blue-600 dark:text-gray-300 dark:hover:text-white">History</Link>
         <Link href="/contact" className="hover:text-blue-600 dark:text-gray-300 dark:hover:text-white">Contact</Link>
-        <Link
-  href="/exam/start"
-  className="hover:text-blue-600 dark:text-gray-300 dark:hover:text-white"
->
-  Take Exam
-</Link>
+        <Link href="/exam/start" className="hover:text-blue-600 dark:text-gray-300 dark:hover:text-white">Take Exam</Link>
 
         {session?.user ? (
           <>
@@ -77,9 +72,30 @@ export default function Navbar() {
           <Link href="/contact" className="flex items-center gap-2 hover:text-blue-600">
             <Mail className="w-4 h-4" /> Contact
           </Link>
-          <Link href="/exam" className="flex items-center gap-2 hover:text-blue-600">
+          <Link href="/exam/start" className="flex items-center gap-2 hover:text-blue-600">
             <PencilLine className="w-4 h-4" /> Take Exam
           </Link>
+
+          {!session?.user ? (
+            <>
+              <Link href="/login" className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-1.5 rounded text-center">
+                Login
+              </Link>
+              <Link href="/signup" className="bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-white px-4 py-1.5 rounded text-center">
+                Signup
+              </Link>
+            </>
+          ) : (
+            <>
+              <span className="text-gray-800 dark:text-gray-200">{session.user.name}</span>
+              <button
+                onClick={() => signOut({ callbackUrl: '/' })}
+                className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
+              >
+                Logout
+              </button>
+            </>
+          )}
         </div>
       )}
     </nav>

@@ -10,18 +10,24 @@ export default function ExamStartPage() {
 
   const [questions, setQuestions] = useState([]);
   const [answers, setAnswers] = useState({});
-  const [remainingTime, setRemainingTime] = useState(3 * 60 * 60); // 3 hours
+  const [remainingTime, setRemainingTime] = useState(3 * 60 * 60); // 3 hours in seconds
   const [showPreview, setShowPreview] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(false); // ✅ New state
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const timerRef = useRef(null);
 
-  const shuffleArray = (array) => array.sort(() => Math.random() - 0.5); // ✅ Randomize questions
+  const shuffleArray = (array) => array.sort(() => Math.random() - 0.5);
 
   useEffect(() => {
     if (status === 'authenticated') {
       fetch('/api/get-questions')
-        .then(res => res.json())
-        .then(data => setQuestions(shuffleArray(data.questions))) // ✅ Shuffle after fetch
+        .then((res) => res.json())
+        .then((data) => {
+          const shuffled = shuffleArray(data.questions);
+          const math = shuffled.filter(q => q.subject.toLowerCase() === 'math').slice(0, 60);
+          const physics = shuffled.filter(q => q.subject.toLowerCase() === 'physics').slice(0, 60);
+          const chemistry = shuffled.filter(q => q.subject.toLowerCase() === 'chemistry').slice(0, 60);
+          setQuestions([...math, ...physics, ...chemistry]);
+        })
         .catch(err => console.error('Error fetching questions:', err));
     }
   }, [status]);
@@ -52,7 +58,21 @@ export default function ExamStartPage() {
       });
     }, 1000);
 
-    return () => clearInterval(timerRef.current); // ✅ Clear timer on unmount
+    return () => clearInterval(timerRef.current);
+  }, []);
+
+  // Warn user on page refresh or tab close
+  useEffect(() => {
+    const handleBeforeUnload = (event) => {
+      event.preventDefault();
+      event.returnValue = ''; // Required for modern browsers
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
   }, []);
 
   const handleOptionSelect = (id, option) => {
@@ -60,12 +80,12 @@ export default function ExamStartPage() {
   };
 
   const handleSubmit = async () => {
-    if (isSubmitted) return; // ✅ Prevent multiple submissions
+    if (isSubmitted) return;
 
     try {
-      setIsSubmitted(true); // ✅ Mark as submitted
-      clearInterval(timerRef.current); // ✅ Stop timer
-      
+      setIsSubmitted(true);
+      clearInterval(timerRef.current);
+
       const res = await fetch('/api/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -86,7 +106,7 @@ export default function ExamStartPage() {
 
   const handleExit = () => {
     if (confirm('Are you sure you want to exit the test? Your progress will be lost.')) {
-      clearInterval(timerRef.current); // ✅ Stop timer
+      clearInterval(timerRef.current);
       localStorage.removeItem('answers');
       localStorage.removeItem('remainingTime');
       router.push('/dashboard');
@@ -163,13 +183,12 @@ export default function ExamStartPage() {
         </button>
       </div>
 
-      {/* Preview Modal */}
       {showPreview && (
         <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
           <div className="bg-white dark:bg-gray-900 text-black dark:text-white rounded-lg shadow-lg p-6 max-w-md w-full">
             <h3 className="text-xl font-bold mb-4">Preview</h3>
             {Object.entries(groupedQuestions).map(([subject, qs]) => {
-              const attempted = qs.filter((q) => answers[q.id]);
+              const attempted = qs.filter((q) => answers[q.id?.toString()]);
               return (
                 <p key={subject} className="mb-2">
                   {subject}: {attempted.length} / {qs.length} attempted
@@ -179,6 +198,7 @@ export default function ExamStartPage() {
             <p className="mt-4 font-medium">
               Total attempted: {Object.keys(answers).length}
             </p>
+
             <div className="mt-4 flex justify-end gap-2">
               <button
                 onClick={() => setShowPreview(false)}

@@ -40,7 +40,8 @@ export async function GET(req, { params }) {
   const sortedTopics = Object.entries(topicStats)
     .map(([topic, stats]) => ({
       topic,
-      accuracy: stats.correct / stats.total,
+      accuracy: parseFloat(((stats.correct / stats.total) * 100).toFixed(1)),
+
     }))
     .sort((a, b) => a.accuracy - b.accuracy);
 
