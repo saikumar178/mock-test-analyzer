@@ -54,7 +54,7 @@ export default function AnalysisPage() {
   };
 
   return (
-    <div className="p-6 max-w-5xl mx-auto text-gray-800 dark:text-gray-100">
+    <div className="p-6 max-w-2xl mx-auto text-gray-800 dark:text-gray-100">
       <h1 className="text-2xl font-bold mb-6">Performance Analysis</h1>
 
       <div className="mb-8">

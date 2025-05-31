@@ -15,9 +15,26 @@ export default function Navbar() {
   return (
     <nav className="bg-white dark:bg-gray-900 shadow-md px-6 py-4 flex justify-between items-center relative z-50">
       {/* Brand */}
-      <Link href="/" className="text-2xl font-bold text-blue-600 dark:text-white">
-        MockTest Analyzer
-      </Link>
+      <Link href="/" className="flex items-center gap-2">
+  {/* Light Theme Logo */}
+  <Image
+    src="/logo.png"
+    alt="MockTest Logo Light"
+    width={90}
+    height={90}
+    className="block dark:hidden"
+  />
+
+  {/* Dark Theme Logo */}
+  <Image
+    src="/logo1.png"
+    alt="MockTest Logo Dark"
+    width={90}
+    height={90}
+    className="hidden dark:block"
+  />
+
+</Link>
 
       {/* Desktop Menu */}
       <div className="hidden md:flex items-center gap-4">

@@ -48,6 +48,7 @@ export default function SignupForm() {
 
   return (
     <div className="p-6 max-w-md mx-auto">
+      <h2 className="text-2xl font-bold mb-4 text-center dark:text-white">Signup</h2>
       {!isWaitingForCode ? (
         <form onSubmit={handleSubmit} className="space-y-4">
           <input

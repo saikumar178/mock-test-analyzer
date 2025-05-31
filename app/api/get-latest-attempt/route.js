@@ -25,14 +25,16 @@ export async function GET() {
 
   const attempts = user?.testAttempts || [];
   if (attempts.length === 0) {
-    return NextResponse.json(null); // frontend handles this
+    return NextResponse.json(null);
   }
 
   const totalTests = attempts.length;
-  const avgScore =
-    attempts.reduce((sum, a) => sum + (a.score || 0), 0) / totalTests;
+  const avgScore = attempts.reduce((sum, a) => sum + (a.score || 0), 0) / totalTests;
 
-  // Count incorrect answers per topic
+  // ⬇️ Get score of latest attempt (first one due to orderBy)
+  const latestScore = attempts[0].score || 0;
+
+  // ⬇️ Weak topic analysis
   const topicStats = {};
   attempts.forEach(attempt => {
     attempt.records.forEach(record => {
@@ -53,13 +55,13 @@ export async function GET() {
   }));
 
   topicAccuracy.sort((a, b) => a.accuracy - b.accuracy);
-
-  const weakTopics = topicAccuracy.slice(0, 3); // bottom 3 accuracy
+  const weakTopics = topicAccuracy.slice(0, 3);
 
   return NextResponse.json({
     totalTests,
     avgScore,
-    weakTopics,
+    latestScore,            
     lastAttempt: attempts[0].completed_at,
+    weakTopics
   });
 }

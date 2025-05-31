@@ -4,7 +4,7 @@ import SessionProviderWrapper from '@/components/SessionProviderWrapper';
 import LayoutWrapper from '@/components/LayoutWrapper';
 
 export const metadata = {
-  title: 'Mock Analyzer',
+  title: 'Mock Test Analyzer',
   description: 'A DBMS Mini Project',
 };
 

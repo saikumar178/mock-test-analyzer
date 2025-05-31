@@ -23,7 +23,6 @@ export default function ExamResultPage() {
         });
     }
   }, [status]);
-  
 
   if (status === 'loading') {
     return <div className="text-center mt-10 text-lg">Loading...</div>;
@@ -36,6 +35,8 @@ export default function ExamResultPage() {
       </div>
     );
   }
+
+  const isEligible = analysis?.latestScore >= 120;
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
@@ -58,10 +59,15 @@ export default function ExamResultPage() {
           <p className="text-gray-800 dark:text-gray-200 mb-2">
             Average Score:{' '}
             <strong>
-            {typeof analysis.avgScore === "number"
-              ? analysis.avgScore.toFixed(2)
-              : "N/A"}
-          </strong>
+              {typeof analysis.avgScore === "number"
+                ? analysis.avgScore.toFixed(2)
+                : "N/A"}
+            </strong>
+          </p>
+
+          <p className="text-gray-800 dark:text-gray-200 mb-2">
+            Last Score:{' '}
+            <strong>{analysis.latestScore ?? "N/A"}</strong>
           </p>
 
           <p className="text-gray-800 dark:text-gray-200 mb-2">
@@ -73,7 +79,7 @@ export default function ExamResultPage() {
             </strong>
           </p>
 
-          <p className="text-gray-800 dark:text-gray-200">
+          <p className="text-gray-800 dark:text-gray-200 mb-4">
             Last Attempt:{' '}
             <strong>
               {analysis.lastAttempt
@@ -81,6 +87,13 @@ export default function ExamResultPage() {
                 : "Never Attempted"}
             </strong>
           </p>
+
+          {/* Eligibility Message */}
+          <div className={`p-4 rounded text-white ${isEligible ? 'bg-green-600' : 'bg-red-600'}`}>
+            {isEligible
+              ? '🎉 Congratulations! You are eligible.'
+              : '⚠️ Keep practicing! Try harder to reach your goal.'}
+          </div>
         </div>
       ) : (
         <div className="text-center text-gray-600 dark:text-gray-300">
