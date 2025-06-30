@@ -23,6 +23,12 @@
 # misc
 .DS_Store
 *.pem
+*.log
+*.sqlite
+*.zip
+*.tar
+*.tgz
+*.gz
 
 # debug
 npm-debug.log*
@@ -30,8 +36,10 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env*
+# env files (do not commit sensitive credentials)
+.env
+.env.local
+.env.*.local
 
 # vercel
 .vercel
@@ -40,6 +48,20 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# Ignore environment variables
-.env
-.env.local
+# prisma generated files
+/prisma/migrations/*
+!prisma/schema.prisma
+
+# VSCode
+.vscode/
+
+# OS specific
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# MacOS specific
+.AppleDouble
+.LSOverride
+Icon?

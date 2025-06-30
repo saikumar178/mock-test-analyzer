@@ -20,6 +20,7 @@ model User {
   name             String
   email            String               @unique
   password_hash    String?              // Null if Google signup
+  role             String   @default("student")
   testRecords      TestRecord[]
   performance      PerformanceAnalysis?
   resetToken       String?              // Store reset token here
@@ -29,6 +30,10 @@ model User {
   testAttempts     TestAttempt[]         
 }
 
+enum Role {
+  STUDENT
+  ADMIN
+}
 
 
 model Question {
@@ -36,7 +41,7 @@ model Question {
   subject        String
   topic          String
   difficulty     DifficultyLevel
-  question_text  String
+  question_text String @db.Text
   correct_option String
   option_1       String
   option_2       String
