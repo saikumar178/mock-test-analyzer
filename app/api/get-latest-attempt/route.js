@@ -65,3 +65,5 @@ export async function GET() {
     weakTopics
   });
 }
+
+export const dynamic = 'force-dynamic';

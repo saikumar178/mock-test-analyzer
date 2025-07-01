@@ -1,5 +1,5 @@
 // app/api/auth/forgot-password/reset-password/route.js
-
+export const dynamic = 'force-dynamic';
 import { hash } from 'bcryptjs';
 import { prisma } from '@/lib/prisma';
 import { NextResponse } from 'next/server';

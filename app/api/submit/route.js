@@ -93,3 +93,5 @@ export async function POST(req) {
     return NextResponse.json({ error: 'Submission failed', message: error.message }, { status: 500 });
   }
 }
+
+export const dynamic = 'force-dynamic';

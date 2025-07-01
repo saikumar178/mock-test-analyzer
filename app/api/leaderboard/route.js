@@ -39,3 +39,5 @@ export async function GET() {
     return NextResponse.json({ error: 'Failed to load leaderboard' }, { status: 500 });
   }
 }
+
+export const dynamic = 'force-dynamic';

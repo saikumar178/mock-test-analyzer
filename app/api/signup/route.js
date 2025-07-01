@@ -27,3 +27,5 @@ export async function POST(req) {
   tempStore.delete(email);
   return NextResponse.json({ message: 'Signup complete. You can now log in.' });
 }
+
+export const dynamic = 'force-dynamic';

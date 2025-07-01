@@ -1,5 +1,5 @@
 // app/api/auth/forgot-password/send-code/route.js
-
+export const dynamic = 'force-dynamic';
 import nodemailer from 'nodemailer';
 import { prisma } from '@/lib/prisma';
 import { NextResponse } from 'next/server';

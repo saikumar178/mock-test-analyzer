@@ -1,7 +1,7 @@
 import { generateEmailToken, sendVerificationEmail } from '@/lib/sendVerificationEmail';
 import { NextResponse } from 'next/server';
 import { tempStore } from '@/lib/teamSignupCache'; 
-
+export const dynamic = 'force-dynamic';
 
 export async function POST(req) {
   const { name, email, password } = await req.json();
