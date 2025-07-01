@@ -29,7 +29,7 @@ export default function AddQuestionPage() {
   const handleSubmit = async () => {
     setError('');
     setSuccess('');
-    const res = await fetch('/api/admin/add-question-api', {
+    const res = await fetch('/api/admin/add-question', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(form),
