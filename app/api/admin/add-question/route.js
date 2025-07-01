@@ -1,4 +1,5 @@
 // app/api/admin/add-question/route.js
+export const dynamic = 'force-dynamic';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/authOptions';
 import { prisma } from '@/lib/prisma';
