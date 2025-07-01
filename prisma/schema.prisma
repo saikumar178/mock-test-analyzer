@@ -75,6 +75,7 @@ model TestRecord {
 
 
 model PerformanceAnalysis {
+   id         Int         @id @default(autoincrement())
   user            User     @relation(fields: [userId], references: [id])
   userId          Int      @unique
   total_tests     Int      @default(0)

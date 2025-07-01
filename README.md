@@ -43,15 +43,6 @@ Mock Test Analyzer is a full-stack web application designed to help students tak
 ![History Page](public/screenshots/history.png)
 
 
-## ⚙️ Setup Instructions
-
-### 1. Clone the Repo
-
-```bash
-git clone https://github.com/your-username/mock-test-analyzer.git
-cd mock-test-analyzer
-
-
 ✅ Future Enhancements
 
     👥 Peer-to-peer discussion or chat
@@ -73,3 +64,11 @@ cd mock-test-analyzer
     Tech Stack Used: Full-Stack (Next.js + Prisma + MySQL)
 
     Deployment: Vercel (Frontend/API) + Railway (DB)
+
+## ⚙️ Setup Instructions
+
+### 1. Clone the Repo
+
+```bash
+git clone https://github.com/your-username/mock-test-analyzer.git
+cd mock-test-analyzer
