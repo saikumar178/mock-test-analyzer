@@ -1,4 +1,3 @@
-// components/ThemeProvider.jsx
 'use client';
 
 import { useEffect, useState } from 'react';

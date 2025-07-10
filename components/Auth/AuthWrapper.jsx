@@ -1,4 +1,3 @@
-// components/Auth/AuthWrapper.jsx
 'use client';
 export default function AuthWrapper({ children }) {
     return (

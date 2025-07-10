@@ -24,8 +24,6 @@ Mock Test Analyzer is a full-stack web application designed to help students tak
 
 ## 📸 Screenshots
 
-## 📸 Screenshots
-
 ### 🧑‍🏫 Admin Panel
 > View and manage users, questions, and performance insights as an admin.
 ![Admin Panel](public/screenshots/admin-panel.png)
